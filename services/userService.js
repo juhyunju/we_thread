@@ -1,3 +1,8 @@
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+const userDao = require('../models/userDao')
+
 // 유저 체크
 const checkUser = async (user_id) =>{
     const result = await myDataSource.query(`
@@ -13,7 +18,6 @@ const checkUser = async (user_id) =>{
         return false
     }
 }
-const userDao = require('../models/userDao')
 
 const signUp = async (nickname, email, password) => {
     // password validation using REGEX
@@ -33,7 +37,32 @@ const signUp = async (nickname, email, password) => {
         return createUser;
       };
 
+const login = async(email,password) => {
+  try{
+    const user = await userDao.login(email)
+    console.log(user)
+
+    if(!user){
+      const err = new Error('USER NOT FOUND')
+      err.statusCode = 404
+      throw err
+    }
+    const passwordMatch = await bcrypt.compare(password, user.password)
+    if(!passwordMatch){
+      const err = new Error('패스워드가 틀립니다.')
+      err.statusCode = 400
+      throw err
+    }
+    const token = jwt.sign({userId: user.id, email: user.email},'key',{expiresIn: '1h'})
+    console.log(token)
+    return {token,userId: user.id, email: user.email}
+
+  }catch(err){
+    throw err;
+  }
+}
+
 
 module.exports = {
-    signUp,checkUser
+    signUp,checkUser,login
 }

@@ -6,7 +6,7 @@ const getThreads = async() =>{
         const threads = await myDataSource.query(`
         SELECT * FROM threads JOIN users ON threads.user_id = users.id
         `)
-        
+        return threads        
     } catch(err){
         const error = new Error('No data')
         error.status.code = 404

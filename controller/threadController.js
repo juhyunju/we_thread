@@ -1,5 +1,4 @@
 const threadService = require('../services/threadService')
-const userService = require('../services/userService')
 const getThreads = async (req,res) => {
     try{
         const threads = await threadService.getThreads()
@@ -39,7 +38,6 @@ const updateThread = async(req,res) => {
         res.status(200).json({message: "threadUpdated"})
     }catch(err){
         res.status(404).json({message: "error"})
-
     }
 }
 const deleteThread = async(req,res) => {

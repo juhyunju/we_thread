@@ -18,6 +18,26 @@ const signUp = async (req, res) => {
   }
 };
 
+const login = async(req,res) => {
+  try{
+    const {email,password} = req.body
+
+    if(!email || !password){
+      return res.status(400).json({message: 'KEY_ERROR'})
+    }
+    const loginResult = await userService.login(email, password)
+    
+    return res.status(200).json({
+      message: "로그인 성공!",
+      token: loginResult.token,
+      userId: loginResult.userId,
+      email: loginResult.email
+    })
+  }catch(err){
+    return res.status(500).json({message: "실패!"})
+  }
+}
+
 module.exports = {
-	signUp
+	signUp,login
 }

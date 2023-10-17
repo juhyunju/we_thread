@@ -30,19 +30,6 @@ const deleteThread = async(id,threadId) => {
     const thread = await threadDao.deleteThread(id,threadId)
     return thread
 }
-// const deleteThread = async (req,res) =>{
-//     const {user_id, thread_id} = req.body
-//     const user = await checkUser(user_id)
-//     if(user == thread_id){
-//         await myDataSource.query(`
-//         DELETE FROM threads WHERE user_id = '${user_id}' AND id = '${thread_id}'
-//         `)
-//         res.status(200).json({message: "postingDeleted"})
-//     }
-//     else {
-//         res.status(404).json({error: "User not found"})
-//     }
-// }
 // 쓰레드 좋아요
 const threadLike = async (req,res) => {
     const { user_id, thread_id } = req.body
