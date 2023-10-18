@@ -24,6 +24,16 @@ const login = async (email) => {
         throw error
     }
 }
+const existingUser = async (userId) => {
+    try{
+        const result = await myDataSource.query(`
+        SELECT * FROM users WHERE id = '${userId}'
+        `)
+        return result
+    }catch(err){
+        throw(error)
+    }
+}
 module.exports = {
-    signUp,login
+    signUp,login,existingUser
 }

@@ -65,9 +65,7 @@ const login = async(email,password) => {
       err.statusCode = 400
       throw err
     }
-
     const token = jwt.sign({userId: user.id, email: user.email},'key',{expiresIn: '1h'})
-    console.log("tokenn",token)
     return {token,userId: user.id, email: user.email}
 
   }catch(err){

@@ -1,10 +1,12 @@
 const http = require('http')
 const express = require('express')
 const routes = require("./routes");
-
-// const {signUp} = require('./services/userService')
-// const {thread, getThread, getThreads,updateThread,deleteThread,threadLike } = require('./services/threadService')
+const cors = require('cors');
 const app = express()
+
+app.use(cors({
+  origin: '*'
+}));
 app.use(express.json())
 app.use(routes)
 
@@ -14,13 +16,6 @@ app.get('/',(req,res) => {
     })
 })
 
-// app.post("/users/sign-up", signUp)
-// app.post("/threads/thread",thread)
-// app.get("/threads",getThreads)
-// app.get("/thread/:userId",getThread)
-// app.put("/thread/update",updateThread)
-// app.delete("/thread/delete",deleteThread)
-// app.post("/thread/like",threadLike)
 
 const server = http.createServer(app)
 

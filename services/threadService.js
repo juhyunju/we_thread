@@ -1,5 +1,5 @@
-const {checkUser} = require('./userService')
 const threadDao = require('../models/threadDao') 
+const userDao = require('../models/userDao')
 const { myDataSource } = require('../models/data')
 
 //전체 쓰레드 조회
@@ -11,6 +11,7 @@ const getThreads = async () => {
 // 유저 쓰레드 조회
 const getThread = async(id) => {
     const thread = await threadDao.getThread(id)
+
     return thread
 }
 // 쓰레드 생성
@@ -21,6 +22,27 @@ const createThread = async(userId,content) => {
 
 // 쓰레드 수정
 const updateThread = async(userId,threadId,content) => {
+    const getThread = await threadDao.existingPost(threadId)
+    const getUser = await userDao.existingUser(userId)
+    const existingThread = getThread[0].user_id
+    const existingUser = getUser[0].id
+
+    // if(getUser.length === 0){
+    //     const err = new Error('없는 유저')
+    //     err.statusCode = 400
+    //     throw err;
+    // }
+    if(getThread.length === 0){
+        const err = new Error('없는 쓰레드')
+        err.statusCode = 400
+        throw err;
+    }
+    // if(existingThread !== existingUser){
+    //     const err = new Error ('안돼요~')
+    //     err.statusCode = 400
+    //     throw err;
+    // }
+
     const thread = await threadDao.updateThread(userId,threadId,content)
     return thread
 }

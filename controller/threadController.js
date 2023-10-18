@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken')
 const threadService = require('../services/threadService')
 const getThreads = async (req,res) => {
     try{
@@ -32,10 +33,22 @@ const createThread = async(req,res) => {
 
 const updateThread = async(req,res) => {
     const {userId,threadId,content} = req.body
-    console.log(userId,threadId,content)
+    const token = req.headers.token
+    // console.log("이것이토큰이다",token)
+    const decodedToken = jwt.verify(token,'key')
+    const loggedInUserId = decodedToken.userId
+    console.log('userId :',typeof userId, 'loggedInUserId:',typeof loggedInUserId)
     try{
-        await threadService.updateThread(userId,threadId,content)
-        res.status(200).json({message: "threadUpdated"})
+        if(token){
+            if(userId === loggedInUserId){
+                await threadService.updateThread(userId,threadId,content)
+                return res.status(200).json({message: "threadUpdated"})
+            } else{
+                return res.status(403).json({ message: "Permission denied" })
+            }   
+        }else{
+            res.status(401).json({message: "Unauthorized"})
+        }
     }catch(err){
         res.status(404).json({message: "error"})
     }

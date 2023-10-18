@@ -6,6 +6,8 @@ const getThreads = async() =>{
         const threads = await myDataSource.query(`
         SELECT * FROM threads JOIN users ON threads.user_id = users.id
         `)
+        // 업데이트 할 때 없는 쓰레드를 업데이트 할려고 하면 에러
+        // 업데이트 -> 전체 쓰레드 조회 -> 쓰레드 id값 추출 -> req에서 입력한 id 값이 빈배열인지 확인
         return threads        
     } catch(err){
         const error = new Error('No data')
@@ -59,7 +61,18 @@ const deleteThread = async(id,threadId) => {
         throw error
     }
 }
+const existingPost = async(threadId) => {
+    try{
+        return await myDataSource.query(`
+        SELECT * FROM threads WHERE id = ${threadId}
+        `)
+    }catch(err){
+        const error = new Error("NOPE")
+        error.status.code = 404
+        throw error
+    }
+}
 
 module.exports = {
-    getThreads,getThread,createThread,updateThread,deleteThread
+    getThreads,getThread,createThread,updateThread,deleteThread,existingPost
 }
