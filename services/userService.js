@@ -52,7 +52,6 @@ const signUp = async (nickname, email, password) => {
 const login = async(email,password) => {
   try{
     const user = await userDao.login(email)
-    console.log(user)
 
     if(!user){
       const err = new Error('USER NOT FOUND')

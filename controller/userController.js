@@ -4,11 +4,10 @@ const signUp = async (req, res) => {
   try {
     const { nickname, email, password} = req.body;
 
-    if ( !email || !password) {
+    if (!nickname|| !email || !password) {
       return res.status(400).json({ message: 'KEY_ERROR' });
     }
-    await userService.signUp( nickname, email, password );
-    console.log(nickname,email,password)
+    await userService.signUp( nickname, email, password);
     return res.status(201).json({
       message: 'SIGNUP_SUCCESS',
     });

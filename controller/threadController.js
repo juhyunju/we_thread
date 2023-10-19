@@ -23,48 +23,57 @@ const getThread = async (req,res) => {
 const createThread = async(req,res) => {
     const {userId,content} = req.body
     try{
+        const token = req.headers.token
+        jwt.verify(token,'key')
         await threadService.createThread(userId,content)
         res.status(200).json({message: "threadCreated"})
-
     }catch(err){
         res.status(404).json({message: "error"})
     }
 }
 
 const updateThread = async(req,res) => {
-    const {userId,threadId,content} = req.body
+    const {content} = req.body
+    const threadId = req.params.threadId
+    const userId = Number(req.params.userId)
     const token = req.headers.token
     // console.log("이것이토큰이다",token)
     const decodedToken = jwt.verify(token,'key')
-    const loggedInUserId = decodedToken.userId
-    console.log('userId :',typeof userId, 'loggedInUserId:',typeof loggedInUserId)
+    const loggedInUserId = await decodedToken.userId
     try{
         if(token){
             if(userId === loggedInUserId){
-                await threadService.updateThread(userId,threadId,content)
-                return res.status(200).json({message: "threadUpdated"})
+                await threadService.updateThread(userId,content,threadId)
+                // console.log(threadId,userId,content)
+                res.status(200).json({message: "threadUpdated"})
             } else{
-                return res.status(403).json({ message: "Permission denied" })
+                // console.log("1",userId,"2",loggedInUserId,'3',threadId)
+                res.status(403).json({ message: "Permission denied" })
             }   
         }else{
-            res.status(401).json({message: "Unauthorized"})
+            res.status(401).json(({message: "fuck"}))
         }
     }catch(err){
+        // console.log(threadId,userId,content)
         res.status(404).json({message: "error"})
     }
 }
 const deleteThread = async(req,res) => {
-    const id = req.params.id
+    const userId = Number(req.params.userId)
     const threadId = req.params.threadId
-    // const checkUser = await userService.checkUser(id)
-
-    // if(checkUser !== id){
-    //     res.status(400).json({message: "User not found"})
-    // }
-
+    const token = req.headers.token
+    const decodedToken = jwt.verify(token,'key')
+    const loggedInUserId = await decodedToken.userId
     try{
-        await threadService.deleteThread(id,threadId)
-        res.status(200).json({ message: 'Thread deleted' });
+        if(token){
+            if(userId === loggedInUserId ){
+                await threadService.deleteThread(userId,threadId)
+                res.status(200).json({ message: 'Thread deleted' });
+            }else{
+                console.log(userId,loggedInUserId)
+                res.status(403).json({ message: "Permission denied" })
+            }
+        }
     }catch(err){
         res.status(404).json({message: "error"})
     }

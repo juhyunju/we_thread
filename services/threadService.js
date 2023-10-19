@@ -21,35 +21,26 @@ const createThread = async(userId,content) => {
 }
 
 // 쓰레드 수정
-const updateThread = async(userId,threadId,content) => {
+const updateThread = async(userId,content,threadId) => {
     const getThread = await threadDao.existingPost(threadId)
-    const getUser = await userDao.existingUser(userId)
-    const existingThread = getThread[0].user_id
-    const existingUser = getUser[0].id
-
-    // if(getUser.length === 0){
-    //     const err = new Error('없는 유저')
-    //     err.statusCode = 400
-    //     throw err;
-    // }
     if(getThread.length === 0){
         const err = new Error('없는 쓰레드')
         err.statusCode = 400
         throw err;
     }
-    // if(existingThread !== existingUser){
-    //     const err = new Error ('안돼요~')
-    //     err.statusCode = 400
-    //     throw err;
-    // }
-
-    const thread = await threadDao.updateThread(userId,threadId,content)
+    const thread = await threadDao.updateThread(userId,content,threadId)
     return thread
 }
 
 // 쓰레드 삭제
-const deleteThread = async(id,threadId) => {
-    const thread = await threadDao.deleteThread(id,threadId)
+const deleteThread = async(userId,threadId) => {
+    const getThread = await threadDao.existingPost(threadId)
+    if(getThread.length === 0){
+        const err = new Error('없는 쓰레드')
+        err.statusCode = 400
+        throw err;
+    }
+    const thread = await threadDao.deleteThread(userId,threadId)
     return thread
 }
 // 쓰레드 좋아요

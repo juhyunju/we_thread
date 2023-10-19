@@ -4,10 +4,8 @@ const { myDataSource } = require("./data")
 const getThreads = async() =>{
     try{
         const threads = await myDataSource.query(`
-        SELECT * FROM threads JOIN users ON threads.user_id = users.id
+        SELECT threads.id,users.nickname,threads.content,threads.created_at,threads.updated_at FROM threads JOIN users ON threads.user_id = users.id ORDER BY threads.created_at DESC
         `)
-        // 업데이트 할 때 없는 쓰레드를 업데이트 할려고 하면 에러
-        // 업데이트 -> 전체 쓰레드 조회 -> 쓰레드 id값 추출 -> req에서 입력한 id 값이 빈배열인지 확인
         return threads        
     } catch(err){
         const error = new Error('No data')
@@ -39,10 +37,10 @@ const createThread = async(userId,content) =>{
         throw error
     }
 }
-const updateThread = async(userId,threadId,content) => {
+const updateThread = async(userId,content,threadId) => {
     try{
         return await myDataSource.query(`
-        UPDATE threads SET content = '${content}', updated_at = NOW() WHERE id = '${threadId}' AND  user_id = '${userId}'
+        UPDATE threads SET content = '${content}', updated_at = NOW() WHERE id = '${threadId}' AND user_id = '${userId}'
         `)
     }catch(err){
         const error = new Error("NOPE!")
@@ -50,11 +48,11 @@ const updateThread = async(userId,threadId,content) => {
         throw error
     }
 }
-const deleteThread = async(id,threadId) => {
+const deleteThread = async(userId,threadId) => {
     try{
         return await myDataSource.query(`
-        DELETE FROM threads WHERE user_id = ? AND id = '${threadId}'
-        `,[id]) 
+        DELETE FROM threads WHERE user_id = '${userId}' AND id = '${threadId}'
+        `) 
     }catch(err){
         const error = new Error("NOPE")
         error.status.code = 404
