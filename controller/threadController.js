@@ -59,25 +59,41 @@ const updateThread = async(req,res) => {
     }
 }
 const deleteThread = async(req,res) => {
-    const userId = Number(req.params.userId)
     const threadId = req.params.threadId
     const token = req.headers.token
     const decodedToken = jwt.verify(token,'key')
-    const loggedInUserId = await decodedToken.userId
+    const userId = decodedToken.userId
     try{
         if(token){
-            if(userId === loggedInUserId ){
+            if(userId){
                 await threadService.deleteThread(userId,threadId)
                 res.status(200).json({ message: 'Thread deleted' });
             }else{
-                console.log(userId,loggedInUserId)
+                console.log(userId)
                 res.status(403).json({ message: "Permission denied" })
+            }
+            }
+        }
+    catch(err){
+        res.status(404).json({message: "Permission denied"})
+    }
+}
+const threadLike = async(req,res) =>{
+    const token = req.headers.token
+    const threadId = req.params.threadId
+    const decodedToken = jwt.verify(token,'key')
+    const userId = decodedToken.userId
+    try{
+        if(token){
+            if(userId){
+                await threadService.threadLikes(userId,threadId)
+                res.status(200).json({message: 'like!'})
             }
         }
     }catch(err){
-        res.status(404).json({message: "error"})
+        res.status(404).json({message:"no"})
     }
 }
 module.exports = {
-    getThreads,getThread,createThread,updateThread,deleteThread
+    getThreads,getThread,createThread,updateThread,deleteThread,threadLike
 }

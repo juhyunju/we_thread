@@ -40,18 +40,36 @@ const deleteThread = async(userId,threadId) => {
         err.statusCode = 400
         throw err;
     }
+    const threadUserId = getThread[0].user_id
+    if(userId !== threadUserId){
+        const err = new Error("삭제할 권한이 없다.")
+        err.statusCode = 403;
+        throw err
+    }
     const thread = await threadDao.deleteThread(userId,threadId)
     return thread
 }
 // 쓰레드 좋아요
-const threadLike = async (req,res) => {
-    const { user_id, thread_id } = req.body
-        await myDataSource.query(`
-        INSERT INTO thread_likes (user_id,thread_id) VALUES('${user_id}','${thread_id}')
-        `)
-        res.status(200).json({message: "likeCreated"})
+const threadLikes = async(userId,threadId) =>{
+    const getThread = await threadDao.existingPost(threadId)
+    if(getThread.length === 0){
+        const err = new Error('없는 쓰레드')
+        err.statusCode = 400
+        console.log('1',err)
+        throw err;
     }
+    const getThreadLike = await threadDao.getThreadLike(userId,threadId)
+    if(getThreadLike.length === 0){
+        insertLike = await threadDao.insertThreadLike(userId,threadId)
+        return insertLike
+    }else{
+        deleteLike = await threadDao.deleteThreadLike(userId,threadId)
+        console.log(getThreadLike.length)
+        return deleteLike
+    }
+}
+
 
     module.exports = {
-        createThread, getThread, getThreads,updateThread,deleteThread,threadLike
+        createThread, getThread, getThreads,updateThread,deleteThread,threadLikes
     }

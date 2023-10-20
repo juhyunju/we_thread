@@ -70,7 +70,41 @@ const existingPost = async(threadId) => {
         throw error
     }
 }
+const getThreadLike = async(userId,threadId) => {
+    try{
+        return await myDataSource.query(`
+        SELECT * FROM thread_likes WHERE thread_id = '${threadId}' AND user_id = '${userId}'
+        `)
+    }catch(err){
+        const error = new Error("NOPE")
+        error.status.code = 404
+        throw error
+    }
+}
+const insertThreadLike = async(userId,threadId) =>{
+    try{
+        return await myDataSource.query(`
+        INSERT INTO thread_likes(user_id,thread_id) VALUES('${userId}','${threadId}')
+        `)
+    }catch(err){
+        const error = new Error("NOPE")
+        error.status.code = 404
+        throw error
+    }
+}
+const deleteThreadLike = async(userId,threadId) =>{
+    try{
+        return await myDataSource.query(`
+        DELETE FROM thread_likes WHERE thread_id = '${threadId}' AND user_id = '${userId}'
+        `)
+    }catch(err){
+        const error = new Error("NOPE")
+        error.status.code = 404
+        throw error
+    }
+}
+
 
 module.exports = {
-    getThreads,getThread,createThread,updateThread,deleteThread,existingPost
+    getThreads,getThread,createThread,updateThread,deleteThread,existingPost,insertThreadLike,deleteThreadLike,getThreadLike
 }
